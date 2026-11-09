@@ -1,3 +1,38 @@
+[data-variant="glass"] {
+  --tour-primary: #5b7cff;
+  --tour-surface: #151a2e;
+  --tour-text: #f1f4ff;
+  --tour-radius: 14px;
+  --tour-dim: rgba(6, 9, 22, 0.72);
+}
+
+[data-variant="minimal"] {
+  --tour-primary: #111827;
+  --tour-surface: #ffffff;
+  --tour-text: #1f2937;
+  --tour-radius: 6px;
+  --tour-dim: rgba(226, 232, 240, 0.7);
+}
+
+[data-variant="bold"] {
+  --tour-primary: #ffd60a;
+  --tour-surface: #c81e4a;
+  --tour-text: #ffffff;
+  --tour-radius: 16px;
+  --tour-dim: rgba(30, 10, 50, 0.7);
+}
+
+.tourlight-root {
+  display: contents;
+}
+
+.tourlight-blocker {
+  position: fixed;
+  z-index: 2147483646;
+  background: transparent;
+  pointer-events: auto;
+}
+
 .tourlight-mask {
   position: fixed;
   z-index: 2147483646;
@@ -98,9 +133,146 @@
   border: 0;
 }
 
+.tourlight-mask::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+
+[data-variant="minimal"] .tourlight-mask {
+  outline: 1px solid var(--tour-primary);
+}
+
+[data-variant="glass"] .tourlight-mask::after {
+  opacity: 1;
+  border: 2px solid var(--tour-primary);
+  animation: tourlight-pulse 2s ease-in-out infinite;
+}
+
+[data-variant="bold"] .tourlight-mask::after {
+  opacity: 1;
+  box-shadow:
+    0 0 18px 4px var(--tour-primary),
+    0 0 40px 10px var(--tour-primary);
+  animation: tourlight-glow 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes tourlight-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0.15;
+  }
+}
+
+@keyframes tourlight-glow {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tourlight-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tourlight-tooltip {
+  animation: tourlight-enter 200ms ease-out;
+}
+
+.tourlight-tooltip__badge,
+.tourlight-tooltip__bar {
+  display: none;
+}
+
+[data-variant="minimal"] .tourlight-tooltip {
+  box-shadow:
+    0 0 0 1px rgba(17, 24, 39, 0.12),
+    0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+[data-variant="minimal"] .tourlight-tooltip__bar {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  overflow: hidden;
+  border-radius: var(--tour-radius, 6px) var(--tour-radius, 6px) 0 0;
+  background: rgba(17, 24, 39, 0.1);
+}
+
+.tourlight-tooltip__bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--tour-primary, #111827);
+  transition: width 250ms ease;
+}
+
+[data-variant="glass"] .tourlight-tooltip {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  [data-variant="glass"] .tourlight-tooltip {
+    background: color-mix(in srgb, var(--tour-surface) 72%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+  }
+}
+
+[data-variant="bold"] .tourlight-tooltip {
+  background: linear-gradient(135deg, var(--tour-surface), #6d28d9);
+}
+
+[data-variant="bold"] .tourlight-tooltip__arrow {
+  background: var(--tour-surface);
+}
+
+[data-variant="bold"] .tourlight-tooltip__badge {
+  display: flex;
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--tour-primary);
+  color: #2b0a3d;
+  font-weight: 700;
+}
+
+[data-variant="bold"] .tourlight-tooltip__actions button {
+  border-color: var(--tour-text);
+  color: var(--tour-text);
+}
+
+[data-variant="bold"] .tourlight-tooltip__actions button:last-child {
+  border-color: var(--tour-primary);
+  background: var(--tour-primary);
+  color: #2b0a3d;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tourlight-mask,
-  .tourlight-tooltip {
+  .tourlight-mask::after,
+  .tourlight-tooltip,
+  .tourlight-tooltip__bar-fill {
     animation: none;
     transition: none;
   }

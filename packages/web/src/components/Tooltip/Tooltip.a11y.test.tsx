@@ -173,6 +173,27 @@ describe("Tooltip accessibility", () => {
     expect(block).toContain(".tourlight-mask");
     expect(block).toContain(".tourlight-tooltip");
   });
+
+  it("every animated or transitioned class is covered by the reduced-motion block", () => {
+    const css = readFileSync(
+      `${import.meta.dirname}/../../styles/tourlight.css`,
+      "utf8",
+    );
+    const start = css.indexOf("@media (prefers-reduced-motion: reduce)");
+    const block = css.slice(start);
+    const animated = new Set<string>();
+    for (const rule of css.slice(0, start).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      const [, selectors = "", body = ""] = rule;
+      if (!/\b(animation|transition)\s*:/.test(body)) continue;
+      for (const selector of selectors.split(",")) {
+        const compound = selector.trim().split(/\s+/).pop() ?? "";
+        if (compound.startsWith(".")) animated.add(compound);
+      }
+    }
+    expect(animated.size).toBeGreaterThan(3);
+    for (const selector of animated) expect(block).toContain(selector);
+    expect(animated).toContain(".tourlight-mask::after");
+  });
 });
 
 function KeyboardHarness({

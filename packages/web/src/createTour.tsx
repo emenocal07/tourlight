@@ -45,7 +45,12 @@ export function createTour<const C extends Record<string, StepConfig>>(
   const storageKey = options?.storageKey ?? `tourlight:${steps.join(",")}`;
 
   // biome-ignore lint/correctness/noComponentHookFactories: createTour runs once at module scope; a distinct identity per call is the intended per-tour binding.
-  function TourProvider({ children, storage }: TourProviderProps) {
+  function TourProvider({
+    children,
+    storage,
+    variant,
+    theme,
+  }: TourProviderProps) {
     return (
       <TourProviderImpl
         context={context}
@@ -54,6 +59,8 @@ export function createTour<const C extends Record<string, StepConfig>>(
         maxShows={maxShows}
         storageKey={storageKey}
         storage={storage}
+        variant={variant}
+        theme={theme}
       >
         {children}
       </TourProviderImpl>

@@ -99,6 +99,15 @@ export function Tooltip({
       aria-describedby={contentId}
       tabIndex={-1}
     >
+      <span className="tourlight-tooltip__badge" aria-hidden="true">
+        {stepNumber}
+      </span>
+      <div className="tourlight-tooltip__bar" aria-hidden="true">
+        <span
+          className="tourlight-tooltip__bar-fill"
+          style={{ width: `${(stepNumber / total) * 100}%` }}
+        />
+      </div>
       <div id={titleId} className="tourlight-tooltip__title">
         {title}
       </div>

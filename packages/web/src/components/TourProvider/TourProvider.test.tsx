@@ -397,7 +397,7 @@ describe("TourProvider overlay", () => {
     expect(screen.getByText("Step A")).toBeTruthy();
     expect(screen.getByText("Step 1 of 3")).toBeTruthy();
     expect(mask()).not.toBeNull();
-    expect(mask()?.parentElement).toBe(document.body);
+    expect(mask()?.parentElement?.parentElement).toBe(document.body);
   });
 
   it("renders nothing once the tour is completed", async () => {

@@ -10,6 +10,7 @@ import {
   tourReducer,
 } from "@emenocal07/tourlight-core";
 import {
+  type CSSProperties,
   type ReactElement,
   type ReactNode,
   useCallback,
@@ -29,12 +30,15 @@ import type {
 import { useTargetRect } from "../../hooks/useTargetRect";
 import { useTourKeyboard } from "../../hooks/useTourKeyboard";
 import { createStepRegistry } from "../../registry/stepRegistry";
+import { themeToCssVariables } from "../../theme/applyTheme";
+import { Blockers } from "../Blockers/Blockers";
 import { Mask } from "../Mask/Mask";
 import { Tooltip } from "../Tooltip/Tooltip";
 
 export interface StepContent {
   title: ReactNode;
   content: ReactNode;
+  interactive?: boolean;
 }
 
 export interface TourProviderImplProps<Id extends string>
@@ -82,6 +86,7 @@ interface OverlayProps {
   content: ReactNode;
   stepNumber: number;
   total: number;
+  interactive: boolean;
   onNext(): void;
   onPrev(): void;
   onSkip(): void;
@@ -90,6 +95,7 @@ interface OverlayProps {
 
 function Overlay({
   onUnavailable,
+  interactive,
   ...tooltip
 }: OverlayProps): ReactElement | null {
   const rect = useTargetRect(tooltip.target);
@@ -100,6 +106,7 @@ function Overlay({
   if (rect === null) return null;
   return (
     <>
+      <Blockers rect={rect} interactive={interactive} />
       <Mask rect={rect} />
       <Tooltip {...tooltip} />
     </>
@@ -113,6 +120,8 @@ export function TourProvider<Id extends string>({
   maxShows,
   storageKey,
   storage,
+  variant = "minimal",
+  theme,
   children,
 }: TourProviderImplProps<Id>): ReactElement {
   const [state, dispatch] = useReducer(
@@ -241,7 +250,12 @@ export function TourProvider<Id extends string>({
       {children}
       {hydrated && isActive
         ? createPortal(
-            <>
+            <div
+              className="tourlight-root"
+              data-variant={variant}
+              // Custom properties are valid inline styles but are not part of CSSProperties.
+              style={themeToCssVariables(theme ?? {}) as CSSProperties}
+            >
               <LiveRegion
                 message={`Now on step ${state.index + 1} of ${state.steps.length}${
                   typeof current?.title === "string" ? `: ${current.title}` : ""
@@ -254,13 +268,14 @@ export function TourProvider<Id extends string>({
                   content={current.content}
                   stepNumber={state.index + 1}
                   total={state.steps.length}
+                  interactive={current.interactive === true}
                   onNext={api.next}
                   onPrev={api.prev}
                   onSkip={api.skip}
                   onUnavailable={onUnavailable}
                 />
               ) : null}
-            </>,
+            </div>,
             document.body,
           )
         : null}
