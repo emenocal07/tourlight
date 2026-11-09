@@ -27,6 +27,7 @@ import type {
   TourProviderProps,
 } from "../../context/tourContext";
 import { useTargetRect } from "../../hooks/useTargetRect";
+import { useTourKeyboard } from "../../hooks/useTourKeyboard";
 import { createStepRegistry } from "../../registry/stepRegistry";
 import { Mask } from "../Mask/Mask";
 import { Tooltip } from "../Tooltip/Tooltip";
@@ -61,6 +62,18 @@ function warnMissingStep(id: string): void {
   if (process.env.NODE_ENV !== "production") {
     console.warn(`[tourlight] Step "${id}" has no mounted element; skipping.`);
   }
+}
+
+// Mounted as soon as the tour is active and filled after mount, so the first message is a
+// change inside an existing live region and is read by screen readers.
+function LiveRegion({ message }: { message: string }): ReactElement {
+  const [text, setText] = useState("");
+  useEffect(() => setText(message), [message]);
+  return (
+    <div className="tourlight-sr-only" aria-live="polite" aria-atomic="true">
+      {text}
+    </div>
+  );
 }
 
 interface OverlayProps {
@@ -216,24 +229,36 @@ export function TourProvider<Id extends string>({
     [registry, api],
   );
 
+  useTourKeyboard(
+    { onNext: api.next, onPrev: api.prev, onClose: api.skip },
+    isActive,
+  );
+
   const current =
     currentId === undefined ? undefined : configs[currentId as Id];
   return (
     <Context.Provider value={value}>
       {children}
-      {hydrated && currentElement && current
+      {hydrated && isActive
         ? createPortal(
-            <Overlay
-              target={currentElement}
-              title={current.title}
-              content={current.content}
-              stepNumber={state.index + 1}
-              total={state.steps.length}
-              onNext={api.next}
-              onPrev={api.prev}
-              onSkip={api.skip}
-              onUnavailable={onUnavailable}
-            />,
+            <>
+              <LiveRegion
+                message={`Now on step ${state.index + 1} of ${state.steps.length}`}
+              />
+              {currentElement && current ? (
+                <Overlay
+                  target={currentElement}
+                  title={current.title}
+                  content={current.content}
+                  stepNumber={state.index + 1}
+                  total={state.steps.length}
+                  onNext={api.next}
+                  onPrev={api.prev}
+                  onSkip={api.skip}
+                  onUnavailable={onUnavailable}
+                />
+              ) : null}
+            </>,
             document.body,
           )
         : null}

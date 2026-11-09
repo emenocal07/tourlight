@@ -6,7 +6,14 @@ import {
   offset,
   shift,
 } from "@floating-ui/dom";
-import { type ReactElement, type ReactNode, useEffect, useRef } from "react";
+import {
+  type ReactElement,
+  type ReactNode,
+  useId,
+  useLayoutEffect,
+  useRef,
+} from "react";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 export interface TooltipProps {
   target: HTMLElement;
@@ -38,7 +45,7 @@ function updatePosition(
       offset(12),
       flip(),
       shift({ padding: 8 }),
-      arrow({ element: arrowEl }),
+      arrow({ element: arrowEl, padding: 8 }),
     ],
   }).then(({ x, y, placement, middlewareData }) => {
     // The tooltip can unmount while the position is being computed.
@@ -69,7 +76,12 @@ export function Tooltip({
   const floatingRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const titleId = useId();
+  const contentId = useId();
+  useFocusTrap(floatingRef, true);
+
+  // Layout effect: the tooltip must be positioned before the first paint.
+  useLayoutEffect(() => {
     const floating = floatingRef.current;
     const arrowEl = arrowRef.current;
     if (!floating || !arrowEl) return;
@@ -79,9 +91,20 @@ export function Tooltip({
   }, [target]);
 
   return (
-    <div ref={floatingRef} className="tourlight-tooltip">
-      <div className="tourlight-tooltip__title">{title}</div>
-      <div className="tourlight-tooltip__content">{content}</div>
+    <div
+      ref={floatingRef}
+      className="tourlight-tooltip"
+      role="dialog"
+      aria-labelledby={titleId}
+      aria-describedby={contentId}
+      tabIndex={-1}
+    >
+      <div id={titleId} className="tourlight-tooltip__title">
+        {title}
+      </div>
+      <div id={contentId} className="tourlight-tooltip__content">
+        {content}
+      </div>
       <div className="tourlight-tooltip__footer">
         <span className="tourlight-tooltip__progress">
           {`Step ${stepNumber} of ${total}`}
