@@ -1,7 +1,9 @@
 import { render } from "@testing-library/react";
-import { createRef } from "react";
-import { describe, expect, it } from "vitest";
+import { createRef, type ReactElement } from "react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { TourContext } from "./context/tourContext";
 import { createTour } from "./createTour";
+import { createStepRegistry } from "./registry/stepRegistry";
 
 describe("createTour", () => {
   it("createTour throws on empty config", () => {
@@ -34,5 +36,77 @@ describe("createTour", () => {
     // @ts-expect-error unknown step id must not compile
     const element = <TourStep id="nope">{<span />}</TourStep>;
     expect(element).toBeDefined();
+  });
+});
+
+describe("TourStep ref merging", () => {
+  const config = { a: { order: 1, title: "A", content: "Step A" } };
+
+  function setup() {
+    const registry = createStepRegistry();
+    const { TourStep } = createTour(config);
+    const wrap = (child: ReactElement) => (
+      <TourContext.Provider
+        value={{
+          registry,
+          api: {
+            start() {},
+            next() {},
+            prev() {},
+            skip() {},
+            finish() {},
+            isActive: false,
+          },
+        }}
+      >
+        <TourStep id="a">{child}</TourStep>
+      </TourContext.Provider>
+    );
+    return { registry, wrap };
+  }
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("calls a child callback ref and still registers the element", () => {
+    const { registry, wrap } = setup();
+    const callback = vi.fn();
+    const { container } = render(wrap(<button type="button" ref={callback} />));
+    expect(callback).toHaveBeenCalledWith(container.firstElementChild);
+    expect(registry.get("a")).toBe(container.firstElementChild);
+  });
+
+  it("registers a child without a ref and emits no console output", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const { registry, wrap } = setup();
+    const { container } = render(wrap(<button type="button" />));
+    expect(registry.get("a")).toBe(container.firstElementChild);
+    expect(error).not.toHaveBeenCalled();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("preserves the child's other props", () => {
+    const { wrap } = setup();
+    const { container } = render(
+      wrap(
+        <button type="button" className="x" data-foo="bar">
+          go
+        </button>,
+      ),
+    );
+    const el = container.firstElementChild;
+    expect(el?.className).toBe("x");
+    expect(el?.getAttribute("data-foo")).toBe("bar");
+    expect(el?.textContent).toBe("go");
+  });
+
+  it("unregisters on unmount", () => {
+    const { registry, wrap } = setup();
+    const { unmount } = render(wrap(<button type="button" />));
+    expect(registry.get("a")).toBeDefined();
+    unmount();
+    expect(registry.get("a")).toBeUndefined();
   });
 });

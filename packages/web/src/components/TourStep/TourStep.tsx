@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useRef,
+  version,
 } from "react";
 import { TourContext } from "../../context/tourContext";
 
@@ -21,16 +22,23 @@ function assignRef<T>(ref: Ref<T> | undefined, value: T | null): void {
   }
 }
 
+const isReact19OrLater = Number.parseInt(version, 10) >= 19;
+
+// React 19 exposes the ref as a prop and warns on element.ref; React 18 only has element.ref.
+function readChildRef(child: ReactElement): Ref<HTMLElement> | undefined {
+  if (isReact19OrLater) {
+    return (child.props as { ref?: Ref<HTMLElement> }).ref;
+  }
+  return (child as unknown as { ref?: Ref<HTMLElement> }).ref;
+}
+
 export function TourStep({ id, children }: TourStepProps): ReactElement {
   const ctx = useContext(TourContext);
   if (!ctx) {
     throw new Error("TourStep must be rendered inside its TourProvider");
   }
   const { registry } = ctx;
-  // React 19 exposes the ref as a prop; React 18 on the element itself.
-  const childRef =
-    (children.props as { ref?: Ref<HTMLElement> }).ref ??
-    (children as unknown as { ref?: Ref<HTMLElement> }).ref;
+  const childRef = readChildRef(children);
   const childRefRef = useRef(childRef);
   childRefRef.current = childRef;
   const nodeRef = useRef<HTMLElement | null>(null);
