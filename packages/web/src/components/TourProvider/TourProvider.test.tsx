@@ -10,7 +10,7 @@ import {
   render,
   screen,
 } from "@testing-library/react";
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createTour } from "../../createTour";
 
@@ -68,6 +68,27 @@ function App({
       ))}
       <Controls tour={tour} />
     </TourProvider>
+  );
+}
+
+function StartOnMount({ tour }: { tour: Tour }) {
+  const { start } = tour.useTour();
+  useEffect(() => {
+    start();
+  }, [start]);
+  return null;
+}
+
+function renderWithStartOnMount(tour: Tour, storage: TourStorage): void {
+  const { TourProvider, TourStep } = tour;
+  render(
+    <TourProvider storage={storage}>
+      <TourStep id="a">
+        <div>target a</div>
+      </TourStep>
+      <StartOnMount tour={tour} />
+      <Controls tour={tour} />
+    </TourProvider>,
   );
 }
 
@@ -190,6 +211,28 @@ describe("TourProvider", () => {
     click("next");
     expect(status()).toBe("inactive");
     expect(readProgress(storage)).toEqual({ shown: 1, completed: true });
+  });
+
+  it("a start before the load resolves keeps a stored completion", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const storage = createMemoryStorage({
+      [KEY]: JSON.stringify({ shown: 1, completed: true }),
+    });
+    renderWithStartOnMount(makeTour(5), storage);
+    await flush();
+    expect(status()).toBe("active");
+    expect(readProgress(storage)).toEqual({ shown: 2, completed: true });
+  });
+
+  it("a start before the load resolves adds to the stored shown count", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const storage = createMemoryStorage({
+      [KEY]: JSON.stringify({ shown: 2, completed: false }),
+    });
+    renderWithStartOnMount(makeTour(5), storage);
+    await flush();
+    expect(status()).toBe("active");
+    expect(readProgress(storage)).toEqual({ shown: 3, completed: false });
   });
 
   it("async storage resolving after unmount does not start (Review Focus 4)", async () => {

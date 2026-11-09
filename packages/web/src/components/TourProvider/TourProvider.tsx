@@ -6,6 +6,7 @@ import {
   recordStart,
   shouldAutoStart,
   type TourProgress,
+  type TourStorage,
   tourReducer,
 } from "@emenocal07/tourlight-core";
 import {
@@ -31,6 +32,18 @@ export interface TourProviderImplProps<Id extends string>
   steps: readonly Id[];
   maxShows: number;
   storageKey: string;
+}
+
+async function saveProgress(
+  storage: TourStorage,
+  key: string,
+  progress: TourProgress,
+): Promise<void> {
+  try {
+    await storage.setItem(key, JSON.stringify(progress));
+  } catch {
+    // Write failures are swallowed: the in-memory progress stays authoritative.
+  }
 }
 
 function warnMissingStep(id: string): void {
@@ -75,7 +88,10 @@ export function TourProvider<Id extends string>({
     dispatch({ type: "start", available });
     const previous = progressRef.current;
     progressRef.current = { ...previous, shown: previous.shown + 1 };
-    void recordStart(storageRef.current, storageKey, previous);
+    // Before the stored progress is loaded, only count in memory: writing now would overwrite it.
+    if (loadHandledRef.current) {
+      void recordStart(storageRef.current, storageKey, previous);
+    }
   }, [registry, steps, storageKey]);
 
   // StrictMode mounts, cleans up and re-mounts effects. The first load is cancelled by its
@@ -87,13 +103,20 @@ export function TourProvider<Id extends string>({
     void loadProgress(activeStorage, storageKey).then((loaded) => {
       if (cancelled || loadHandledRef.current) return;
       loadHandledRef.current = true;
-      // Merge with any manual start/finish that happened before the load resolved.
+      // progressRef holds only the starts/finish that happened before the load (none were
+      // written), so adding them to the stored progress counts each exactly once.
       const local = progressRef.current;
       const merged: TourProgress = {
         shown: loaded.shown + local.shown,
         completed: loaded.completed || local.completed,
       };
       progressRef.current = merged;
+      if (
+        merged.shown !== loaded.shown ||
+        merged.completed !== loaded.completed
+      ) {
+        void saveProgress(activeStorage, storageKey, merged);
+      }
       if (statusRef.current === "idle" && shouldAutoStart(merged, maxShows)) {
         start();
       }
@@ -108,7 +131,9 @@ export function TourProvider<Id extends string>({
     const previous = progressRef.current;
     if (previous.completed) return;
     progressRef.current = { ...previous, completed: true };
-    void markFinished(storageRef.current, storageKey, previous);
+    if (loadHandledRef.current) {
+      void markFinished(storageRef.current, storageKey, previous);
+    }
   }, [state.status, storageKey]);
 
   const currentId =
