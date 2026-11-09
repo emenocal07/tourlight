@@ -25,8 +25,6 @@
   <a href="#-development">Development</a>
 </p>
 
-> **Status:** `0.1.0` is not published to npm yet. Until it is, clone the repo or install from a packed tarball (see [Quick start](#-quick-start)).
-
 ## ✨ Why Tourlight
 
 - **Declarative.** Describe the tour once with `createTour`, then wrap the elements you want to explain in `<TourStep id="...">`. No imperative selectors, no extra DOM node.
@@ -41,16 +39,7 @@
 npm install @emenocal07/tourlight
 ```
 
-Not on npm yet? Pack both packages and install the tarballs together (the React package depends on the core package at the same version):
-
-```bash
-git clone https://github.com/emenocal07/tourlight.git && cd tourlight
-npm ci && npm run build
-mkdir -p ../tourlight-packs
-npm pack -w @emenocal07/tourlight-core -w @emenocal07/tourlight --pack-destination ../tourlight-packs
-# then, in your app:
-npm install ../tourlight-packs/*.tgz
-```
+That is the only package you install: it brings `@emenocal07/tourlight-core` and `@floating-ui/dom` along as dependencies, and React (18 or 19) comes from your app.
 
 Create the tour at **module scope**, import the stylesheet once, then wrap the elements to highlight:
 
