@@ -178,9 +178,21 @@ try {
           );
         }
       }
+      const coreManifest = JSON.parse(
+        readFileSync(
+          path.join(
+            consumer,
+            "node_modules",
+            "@emenocal07",
+            "tourlight-core",
+            "package.json",
+          ),
+          "utf8",
+        ),
+      );
       assert(
-        manifest.dependencies[CORE] === "0.1.0",
-        `core dependency is ${manifest.dependencies[CORE]}`,
+        manifest.dependencies[CORE] === coreManifest.version,
+        `core dependency is ${manifest.dependencies[CORE]}, installed core version is ${coreManifest.version}`,
       );
     },
   );
