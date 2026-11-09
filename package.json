@@ -12,10 +12,14 @@
     "typecheck": "npm run build:libs && npm run typecheck --workspaces --if-present",
     "lint": "biome check .",
     "build:core": "npm run build -w @emenocal07/tourlight-core",
-    "build:libs": "npm run build -w @emenocal07/tourlight-core && npm run build -w @emenocal07/tourlight"
+    "build:libs": "npm run build -w @emenocal07/tourlight-core && npm run build -w @emenocal07/tourlight",
+    "smoke": "npm run build:libs && node scripts/smoke.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.6",
+    "@changesets/cli": "^2.31.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
