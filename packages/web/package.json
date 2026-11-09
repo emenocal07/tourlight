@@ -24,7 +24,8 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@emenocal07/tourlight-core": "0.1.0"
+    "@emenocal07/tourlight-core": "0.1.0",
+    "@floating-ui/dom": "^1.8.0"
   },
   "peerDependencies": {
     "react": ">=18",

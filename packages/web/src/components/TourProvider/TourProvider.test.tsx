@@ -11,8 +11,10 @@ import {
   screen,
 } from "@testing-library/react";
 import { StrictMode, useEffect } from "react";
+import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createTour } from "../../createTour";
+import { triggerResize } from "../../test/resizeObserver";
 
 const KEY = "test-tour";
 
@@ -112,6 +114,10 @@ function click(name: string): void {
 
 const tourA = createTour({ a: { order: 1, title: "A", content: "A" } });
 const tourB = createTour({ b: { order: 1, title: "B", content: "B" } });
+const tourDisplay = createTour({
+  a: { order: 1, title: "First", content: "First content" },
+  b: { order: 2, title: "Second", content: "Second content" },
+});
 
 function UseA() {
   tourA.useTour();
@@ -366,5 +372,138 @@ describe("TourProvider", () => {
     expect(status()).toBe("A on B on");
     // Default storage keys are derived from each config, so progress is not shared.
     expect(writtenKeys.size).toBe(2);
+  });
+});
+
+describe("TourProvider overlay", () => {
+  const mask = (): HTMLElement | null => screen.queryByTestId("tourlight-mask");
+
+  it("renders nothing when the tour is idle", async () => {
+    const storage = createMemoryStorage({
+      [KEY]: JSON.stringify({ shown: 0, completed: true }),
+    });
+    render(<App tour={makeTour(5)} storage={storage} />);
+    await flush();
+    expect(status()).toBe("inactive");
+    expect(mask()).toBeNull();
+    expect(screen.queryByText("Step 1 of 3")).toBeNull();
+  });
+
+  it('renders title, content and "Step 1 of 3" when active', async () => {
+    render(<App tour={makeTour()} storage={createMemoryStorage()} />);
+    await flush();
+    expect(status()).toBe("active");
+    expect(screen.getByText("A")).toBeTruthy();
+    expect(screen.getByText("Step A")).toBeTruthy();
+    expect(screen.getByText("Step 1 of 3")).toBeTruthy();
+    expect(mask()).not.toBeNull();
+    expect(mask()?.parentElement).toBe(document.body);
+  });
+
+  it("renders nothing once the tour is completed", async () => {
+    render(<App tour={makeTour()} storage={createMemoryStorage()} />);
+    await flush();
+    click("finish");
+    expect(mask()).toBeNull();
+    expect(screen.queryByText("Step 1 of 3")).toBeNull();
+  });
+
+  it("the Next button of the tooltip advances the tour", async () => {
+    render(<App tour={makeTour()} storage={createMemoryStorage()} />);
+    await flush();
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByText("Step 2 of 3")).toBeTruthy();
+    expect(screen.getByText("Step B")).toBeTruthy();
+  });
+
+  it("portal is not rendered during server render", () => {
+    const { TourProvider, TourStep } = makeTour();
+    const html = renderToString(
+      <TourProvider storage={createMemoryStorage()}>
+        <TourStep id="a">
+          <div>target a</div>
+        </TourStep>
+      </TourProvider>,
+    );
+    expect(html).toContain("target a");
+    expect(html).not.toContain("tourlight");
+    expect(html).not.toContain("Step 1 of");
+  });
+
+  it("zero-sized target is treated as unavailable and skipped (Review Focus 2)", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(
+      function (this: Element) {
+        return this.textContent === "target a"
+          ? new DOMRect(0, 0, 0, 0)
+          : new DOMRect(10, 20, 100, 40);
+      },
+    );
+    render(<App tour={makeTour()} storage={createMemoryStorage()} />);
+    await flush();
+    expect(status()).toBe("active");
+    expect(screen.getByText("Step B")).toBeTruthy();
+    expect(screen.getByText("Step 1 of 2")).toBeTruthy();
+  });
+
+  it("a display none target is treated as unavailable and skipped", async () => {
+    render(
+      <tourDisplay.TourProvider storage={createMemoryStorage()}>
+        <tourDisplay.TourStep id="a">
+          <div style={{ display: "none" }}>hidden</div>
+        </tourDisplay.TourStep>
+        <tourDisplay.TourStep id="b">
+          <div>visible</div>
+        </tourDisplay.TourStep>
+      </tourDisplay.TourProvider>,
+    );
+    await flush();
+    expect(screen.getByText("Step 1 of 1")).toBeTruthy();
+    expect(screen.getByText("Second")).toBeTruthy();
+  });
+
+  it("an active step that unmounts is skipped when its size change is observed", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const tour = makeTour();
+    const storage = createMemoryStorage();
+    const { rerender } = render(<App tour={tour} storage={storage} />);
+    await flush();
+    expect(screen.getByText("Step A")).toBeTruthy();
+    rerender(<App tour={tour} storage={storage} mounted={["b", "c"]} />);
+    act(() => triggerResize());
+    expect(screen.getByText("Step B")).toBeTruthy();
+    expect(screen.getByText("Step 1 of 2")).toBeTruthy();
+  });
+
+  it("start while already active is a no-op", async () => {
+    const storage = createMemoryStorage();
+    render(<App tour={makeTour(5)} storage={storage} />);
+    await flush();
+    click("next");
+    expect(screen.getByText("Step 2 of 3")).toBeTruthy();
+    click("start");
+    await flush();
+    expect(screen.getByText("Step 2 of 3")).toBeTruthy();
+    expect(readProgress(storage)).toEqual({ shown: 1, completed: false });
+  });
+
+  it("start from a mount effect under StrictMode counts a single show", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const storage = createMemoryStorage();
+    const tour = makeTour(5);
+    const { TourProvider, TourStep } = tour;
+    render(
+      <StrictMode>
+        <TourProvider storage={storage}>
+          <TourStep id="a">
+            <div>target a</div>
+          </TourStep>
+          <StartOnMount tour={tour} />
+        </TourProvider>
+      </StrictMode>,
+    );
+    await flush();
+    await flush();
+    expect(readProgress(storage)).toEqual({ shown: 1, completed: false });
   });
 });

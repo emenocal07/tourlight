@@ -11,6 +11,7 @@ import {
 } from "@emenocal07/tourlight-core";
 import {
   type ReactElement,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -18,18 +19,28 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import type {
   TourApi,
   TourContextType,
   TourContextValue,
   TourProviderProps,
 } from "../../context/tourContext";
+import { useTargetRect } from "../../hooks/useTargetRect";
 import { createStepRegistry } from "../../registry/stepRegistry";
+import { Mask } from "../Mask/Mask";
+import { Tooltip } from "../Tooltip/Tooltip";
+
+export interface StepContent {
+  title: ReactNode;
+  content: ReactNode;
+}
 
 export interface TourProviderImplProps<Id extends string>
   extends TourProviderProps {
   context: TourContextType;
   steps: readonly Id[];
+  configs: Readonly<Record<Id, StepContent>>;
   maxShows: number;
   storageKey: string;
 }
@@ -52,9 +63,40 @@ function warnMissingStep(id: string): void {
   }
 }
 
+interface OverlayProps {
+  target: HTMLElement;
+  title: ReactNode;
+  content: ReactNode;
+  stepNumber: number;
+  total: number;
+  onNext(): void;
+  onPrev(): void;
+  onSkip(): void;
+  onUnavailable(): void;
+}
+
+function Overlay({
+  onUnavailable,
+  ...tooltip
+}: OverlayProps): ReactElement | null {
+  const rect = useTargetRect(tooltip.target);
+  // A null rect means the target is detached, hidden or zero-sized.
+  useEffect(() => {
+    if (rect === null) onUnavailable();
+  }, [rect, onUnavailable]);
+  if (rect === null) return null;
+  return (
+    <>
+      <Mask rect={rect} />
+      <Tooltip {...tooltip} />
+    </>
+  );
+}
+
 export function TourProvider<Id extends string>({
   context: Context,
   steps,
+  configs,
   maxShows,
   storageKey,
   storage,
@@ -136,14 +178,26 @@ export function TourProvider<Id extends string>({
     }
   }, [state.status, storageKey]);
 
+  // The overlay renders only after hydration: nothing may be portaled during server render.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+
   const currentId =
     state.status === "active" ? state.steps[state.index] : undefined;
+  const currentElement =
+    currentId === undefined ? undefined : registry.get(currentId);
+  // Runs after every render: the registry is not reactive, so an unmounted step is only seen here.
   useEffect(() => {
     if (currentId !== undefined && registry.get(currentId) === undefined) {
       warnMissingStep(currentId);
       dispatch({ type: "stepUnavailable", id: currentId });
     }
-  }, [currentId, registry]);
+  });
+  const onUnavailable = useCallback(() => {
+    if (currentId !== undefined) {
+      dispatch({ type: "stepUnavailable", id: currentId });
+    }
+  }, [currentId]);
 
   const isActive = state.status === "active";
   const api = useMemo<TourApi>(
@@ -162,5 +216,27 @@ export function TourProvider<Id extends string>({
     [registry, api],
   );
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  const current =
+    currentId === undefined ? undefined : configs[currentId as Id];
+  return (
+    <Context.Provider value={value}>
+      {children}
+      {hydrated && currentElement && current
+        ? createPortal(
+            <Overlay
+              target={currentElement}
+              title={current.title}
+              content={current.content}
+              stepNumber={state.index + 1}
+              total={state.steps.length}
+              onNext={api.next}
+              onPrev={api.prev}
+              onSkip={api.skip}
+              onUnavailable={onUnavailable}
+            />,
+            document.body,
+          )
+        : null}
+    </Context.Provider>
+  );
 }

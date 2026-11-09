@@ -50,6 +50,7 @@ export function createTour<const C extends Record<string, StepConfig>>(
       <TourProviderImpl
         context={context}
         steps={steps}
+        configs={config}
         maxShows={maxShows}
         storageKey={storageKey}
         storage={storage}
