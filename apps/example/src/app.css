@@ -1,0 +1,47 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.search,
+.filters {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.spacer {
+  height: 70vh;
+  display: grid;
+  place-items: center;
+  color: #888;
+}
+.spacer.tall {
+  height: 120vh;
+}
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.card {
+  padding: 32px 12px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}

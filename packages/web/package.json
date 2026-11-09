@@ -14,13 +14,17 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./style.css": "./dist/style.css"
   },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/copyStyles.mjs",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
