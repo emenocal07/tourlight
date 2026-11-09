@@ -13,3 +13,13 @@ export type TourAction<Id extends string> =
   | { type: "skip" }
   | { type: "finish" }
   | { type: "stepUnavailable"; id: Id };
+
+export interface TourStorage {
+  getItem(key: string): string | null | Promise<string | null>;
+  setItem(key: string, value: string): void | Promise<void>;
+}
+
+export interface TourProgress {
+  shown: number;
+  completed: boolean;
+}
