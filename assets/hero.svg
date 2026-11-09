@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <title id="t">Tourlight spotlight tour</title>
+  <desc id="d">An animated mini app page. A dimmed overlay with a spotlight hole glides between a search bar, a chart card and an export button while a tooltip card follows and its text changes: Step 1 of 3, 2 of 3, 3 of 3.</desc>
+  <style>
+    .still { display: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .anim { display: none; }
+      .still { display: inline; }
+    }
+    .ring { animation: pulse 2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes pulse { from { opacity: 0.9; transform: scale(1); } to { opacity: 0.15; transform: scale(1.04); } }
+    @media (prefers-reduced-motion: reduce) { .ring { animation: none; opacity: 0.9; } }
+  </style>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/><stop offset="1" stop-color="#1a2145"/>
+    </linearGradient>
+    <clipPath id="win"><rect x="100" y="40" width="1000" height="340" rx="16"/></clipPath>
+    <mask id="holeAnim" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="420">
+      <rect width="1200" height="420" fill="#fff"/>
+      <rect rx="12" fill="#000" x="134" y="104" width="372" height="56">
+        <animate attributeName="x" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="134;134;464;464;894;894;134"/><animate attributeName="y" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="104;104;184;184;104;104;104"/><animate attributeName="width" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="372;372;312;312;172;172;372"/><animate attributeName="height" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="56;56;172;172;56;56;56"/>
+      </rect>
+    </mask>
+    <mask id="holeStill" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="420">
+      <rect width="1200" height="420" fill="#fff"/>
+      <rect rx="12" fill="#000" x="134" y="104" width="372" height="56"/>
+    </mask>
+  </defs>
+  <rect width="1200" height="420" rx="24" fill="url(#bg)"/>
+  <circle cx="1040" cy="40" r="180" fill="#5b7cff" opacity="0.10"/>
+  <circle cx="160" cy="400" r="160" fill="#8b5cf6" opacity="0.10"/>
+  
+  <g clip-path="url(#win)">
+    <rect x="100" y="40" width="1000" height="340" fill="#f4f6fb"/>
+    <rect x="100" y="40" width="1000" height="46" fill="#ffffff"/>
+    <circle cx="126" cy="63" r="6" fill="#ff6b6b"/><circle cx="148" cy="63" r="6" fill="#ffc53d"/><circle cx="170" cy="63" r="6" fill="#3ddc84"/>
+    <rect x="860" y="57" width="60" height="12" rx="6" fill="#dfe4ef"/><rect x="934" y="57" width="60" height="12" rx="6" fill="#dfe4ef"/><rect x="1008" y="57" width="60" height="12" rx="6" fill="#dfe4ef"/>
+    <rect x="140" y="110" width="360" height="44" rx="10" fill="#ffffff" stroke="#d5dbe8"/>
+    <circle cx="164" cy="132" r="7" fill="none" stroke="#9aa5bd" stroke-width="2"/><line x1="169" y1="137" x2="175" y2="143" stroke="#9aa5bd" stroke-width="2" stroke-linecap="round"/>
+    <rect x="190" y="127" width="120" height="10" rx="5" fill="#e4e8f2"/>
+    <rect x="900" y="110" width="160" height="44" rx="10" fill="#5b7cff"/>
+    <rect x="945" y="127" width="70" height="10" rx="5" fill="#ffffff" opacity="0.9"/>
+    <rect x="140" y="190" width="300" height="160" rx="14" fill="#ffffff" stroke="#e1e6f0"/>
+    <rect x="160" y="212" width="120" height="12" rx="6" fill="#dfe4ef"/><rect x="160" y="238" width="200" height="8" rx="4" fill="#eceff6"/><rect x="160" y="258" width="170" height="8" rx="4" fill="#eceff6"/>
+    <rect x="470" y="190" width="300" height="160" rx="14" fill="#ffffff" stroke="#e1e6f0"/>
+    <rect x="496" y="290" width="30" height="40" rx="5" fill="#b9c6ff"/><rect x="540" y="262" width="30" height="68" rx="5" fill="#8fa4ff"/><rect x="584" y="276" width="30" height="54" rx="5" fill="#b9c6ff"/><rect x="628" y="236" width="30" height="94" rx="5" fill="#5b7cff"/><rect x="672" y="254" width="30" height="76" rx="5" fill="#8fa4ff"/><rect x="716" y="222" width="30" height="108" rx="5" fill="#5b7cff"/>
+    <rect x="800" y="190" width="260" height="160" rx="14" fill="#ffffff" stroke="#e1e6f0"/>
+    <rect x="820" y="212" width="100" height="12" rx="6" fill="#dfe4ef"/><rect x="820" y="238" width="200" height="8" rx="4" fill="#eceff6"/><rect x="820" y="258" width="150" height="8" rx="4" fill="#eceff6"/><rect x="820" y="278" width="180" height="8" rx="4" fill="#eceff6"/>
+  </g>
+  <g class="anim">
+    <g clip-path="url(#win)"><rect x="100" y="40" width="1000" height="340" fill="#060916" fill-opacity="0.72" mask="url(#holeAnim)"/></g>
+    <rect class="ring" rx="12" fill="none" stroke="#5b7cff" stroke-width="2" x="134" y="104" width="372" height="56">
+      <animate attributeName="x" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="134;134;464;464;894;894;134"/><animate attributeName="y" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="104;104;184;184;104;104;104"/><animate attributeName="width" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="372;372;312;312;172;172;372"/><animate attributeName="height" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="56;56;172;172;56;56;56"/>
+    </rect>
+    <g transform="translate(140 176)">
+      <animateTransform attributeName="transform" type="translate" dur="12s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3333;0.5833;0.6667;0.9167;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1;0.4 0 0.2 1" values="140 176;140 176;796 206;796 206;786 176;786 176;140 176"/>
+      <rect width="280" height="130" rx="14" fill="#151a2e" stroke="#ffffff" stroke-opacity="0.14"/>
+      <g opacity="1"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.25;0.29;0.9167;0.96;1" values="1;1;0;0;1;1"/>
+      <text x="16" y="34" font-size="16" font-weight="600" fill="#f1f4ff">Search anywhere</text>
+      <text x="16" y="58" font-size="13" fill="#f1f4ff" opacity="0.85">Find any record in seconds.</text>
+      <text x="16" y="108" font-size="12" fill="#f1f4ff" opacity="0.7">Step 1 of 3</text>
+      <g font-size="12">
+        <rect x="118" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff"/>
+        <text x="140" y="108" text-anchor="middle" fill="#5b7cff">Skip</text>
+        <rect x="168" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff" opacity="0.4"/>
+        <text x="190" y="108" text-anchor="middle" fill="#5b7cff" opacity="0.4">Back</text>
+        <rect x="218" y="92" width="46" height="24" rx="12" fill="#5b7cff"/>
+        <text x="241" y="108" text-anchor="middle" fill="#151a2e">Next</text>
+      </g>
+      </g>
+      <g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.30;0.34;0.5833;0.62;1" values="0;0;1;1;0;0"/>
+      <text x="16" y="34" font-size="16" font-weight="600" fill="#f1f4ff">Your dashboard</text>
+      <text x="16" y="58" font-size="13" fill="#f1f4ff" opacity="0.85">Live numbers update as you work.</text>
+      <text x="16" y="108" font-size="12" fill="#f1f4ff" opacity="0.7">Step 2 of 3</text>
+      <g font-size="12">
+        <rect x="118" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff"/>
+        <text x="140" y="108" text-anchor="middle" fill="#5b7cff">Skip</text>
+        <rect x="168" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff" opacity="1"/>
+        <text x="190" y="108" text-anchor="middle" fill="#5b7cff" opacity="1">Back</text>
+        <rect x="218" y="92" width="46" height="24" rx="12" fill="#5b7cff"/>
+        <text x="241" y="108" text-anchor="middle" fill="#151a2e">Next</text>
+      </g>
+      </g>
+      <g opacity="0"><animate attributeName="opacity" dur="12s" repeatCount="indefinite" keyTimes="0;0.62;0.66;0.9167;0.95;1" values="0;0;1;1;0;0"/>
+      <text x="16" y="34" font-size="16" font-weight="600" fill="#f1f4ff">Share it</text>
+      <text x="16" y="58" font-size="13" fill="#f1f4ff" opacity="0.85">Export a report with one click.</text>
+      <text x="16" y="108" font-size="12" fill="#f1f4ff" opacity="0.7">Step 3 of 3</text>
+      <g font-size="12">
+        <rect x="118" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff"/>
+        <text x="140" y="108" text-anchor="middle" fill="#5b7cff">Skip</text>
+        <rect x="168" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff" opacity="1"/>
+        <text x="190" y="108" text-anchor="middle" fill="#5b7cff" opacity="1">Back</text>
+        <rect x="218" y="92" width="46" height="24" rx="12" fill="#5b7cff"/>
+        <text x="241" y="108" text-anchor="middle" fill="#151a2e">Next</text>
+      </g>
+      </g>
+    </g>
+  </g>
+  <g class="still">
+    <g clip-path="url(#win)"><rect x="100" y="40" width="1000" height="340" fill="#060916" fill-opacity="0.72" mask="url(#holeStill)"/></g>
+    <rect rx="12" fill="none" stroke="#5b7cff" stroke-width="2" x="134" y="104" width="372" height="56"/>
+    <g transform="translate(140 176)"><rect width="280" height="130" rx="14" fill="#151a2e" stroke="#ffffff" stroke-opacity="0.14"/>
+      <text x="16" y="34" font-size="16" font-weight="600" fill="#f1f4ff">Search anywhere</text>
+      <text x="16" y="58" font-size="13" fill="#f1f4ff" opacity="0.85">Find any record in seconds.</text>
+      <text x="16" y="108" font-size="12" fill="#f1f4ff" opacity="0.7">Step 1 of 3</text>
+      <g font-size="12">
+        <rect x="118" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff"/>
+        <text x="140" y="108" text-anchor="middle" fill="#5b7cff">Skip</text>
+        <rect x="168" y="92" width="44" height="24" rx="12" fill="none" stroke="#5b7cff" opacity="0.4"/>
+        <text x="190" y="108" text-anchor="middle" fill="#5b7cff" opacity="0.4">Back</text>
+        <rect x="218" y="92" width="46" height="24" rx="12" fill="#5b7cff"/>
+        <text x="241" y="108" text-anchor="middle" fill="#151a2e">Next</text>
+      </g></g>
+  </g>
+</svg>

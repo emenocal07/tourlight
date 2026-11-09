@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <title id="t">Tourlight variants: glass, minimal and bold</title>
+  <desc id="d">Three mini mockups of the same tour step. Glass: a dark frosted tooltip with a pulsing ring. Minimal: a white card with a thin outline and a progress bar. Bold: a red to violet gradient tooltip with a numbered badge and a yellow glow.</desc>
+  <style>
+    .pulse { animation: pulse 2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    .glow { animation: glow 1.6s ease-in-out infinite alternate; }
+    @keyframes pulse { from { opacity: 0.9; transform: scale(1); } to { opacity: 0.15; transform: scale(1.04); } }
+    @keyframes glow { from { opacity: 0.55; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { .pulse, .glow { animation: none; opacity: 0.9; } }
+  </style>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1020"/><stop offset="1" stop-color="#1a2145"/></linearGradient>
+    <linearGradient id="boldGrad" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c81e4a"/><stop offset="1" stop-color="#6d28d9"/></linearGradient>
+    <filter id="blur" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="4"/></filter>
+  </defs>
+  <rect width="1200" height="360" rx="24" fill="url(#bg)"/>
+  
+  <g transform="translate(30 20)">
+    <clipPath id="clip-glass"><rect width="360" height="260" rx="16"/></clipPath>
+    <mask id="mask-glass" maskUnits="userSpaceOnUse" x="0" y="0" width="360" height="260">
+      <rect width="360" height="260" fill="#fff"/><rect x="36" y="36" width="288" height="48" rx="14" fill="#000"/>
+    </mask>
+  </g>
+  <g transform="translate(30 20)">
+    <g clip-path="url(#clip-glass)">
+      <rect width="360" height="260" fill="#f4f6fb"/>
+      <rect width="360" height="26" fill="#ffffff"/>
+      <circle cx="16" cy="13" r="4" fill="#ff6b6b"/><circle cx="30" cy="13" r="4" fill="#ffc53d"/><circle cx="44" cy="13" r="4" fill="#3ddc84"/>
+      <rect x="40" y="40" width="280" height="40" rx="8" fill="#ffffff" stroke="#d5dbe8"/>
+      <rect x="56" y="56" width="100" height="8" rx="4" fill="#e4e8f2"/>
+      <rect x="40" y="100" width="130" height="130" rx="10" fill="#ffffff" stroke="#e1e6f0"/>
+      <rect x="190" y="100" width="130" height="130" rx="10" fill="#ffffff" stroke="#e1e6f0"/>
+      <rect width="360" height="260" fill="rgba(6,9,22,0.72)" mask="url(#mask-glass)"/>
+    </g>
+    <g transform="translate(0 -20) translate(0 20)">
+      <rect class="pulse" x="36" y="36" width="288" height="48" rx="14" fill="none" stroke="#5b7cff" stroke-width="2" />
+    </g>
+    <g transform="translate(40 110)">
+      <rect width="280" height="112" rx="14" fill="#151a2e" fill-opacity="0.82" stroke="#ffffff" stroke-opacity="0.14"/>
+      
+        <text x="16" y="32" font-size="15" font-weight="600" fill="#f1f4ff">Filter results</text>
+        <text x="16" y="52" font-size="12" fill="#f1f4ff" opacity="0.85">Narrow the list by genre.</text>
+        <text x="16" y="97" font-size="11" fill="#f1f4ff" opacity="0.7">Step 2 of 3</text>
+        <g font-size="11">
+          <rect x="132" y="82" width="40" height="22" rx="11" fill="none" stroke="#5b7cff"/><text x="152" y="97" text-anchor="middle" fill="#5b7cff">Skip</text>
+          <rect x="178" y="82" width="40" height="22" rx="11" fill="none" stroke="#5b7cff"/><text x="198" y="97" text-anchor="middle" fill="#5b7cff">Back</text>
+          <rect x="224" y="82" width="40" height="22" rx="11" fill="#5b7cff" stroke="#5b7cff"/><text x="244" y="97" text-anchor="middle" fill="#151a2e">Next</text>
+        </g>
+    </g>
+  </g>
+  <text x="210" y="316" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f4ff">glass</text>
+  <text x="210" y="338" text-anchor="middle" font-size="13" fill="#f1f4ff" opacity="0.65">Frosted dark surface, pulsing ring</text>
+  
+  <g transform="translate(420 20)">
+    <clipPath id="clip-minimal"><rect width="360" height="260" rx="16"/></clipPath>
+    <mask id="mask-minimal" maskUnits="userSpaceOnUse" x="0" y="0" width="360" height="260">
+      <rect width="360" height="260" fill="#fff"/><rect x="36" y="36" width="288" height="48" rx="6" fill="#000"/>
+    </mask>
+  </g>
+  <g transform="translate(420 20)">
+    <g clip-path="url(#clip-minimal)">
+      <rect width="360" height="260" fill="#f4f6fb"/>
+      <rect width="360" height="26" fill="#ffffff"/>
+      <circle cx="16" cy="13" r="4" fill="#ff6b6b"/><circle cx="30" cy="13" r="4" fill="#ffc53d"/><circle cx="44" cy="13" r="4" fill="#3ddc84"/>
+      <rect x="40" y="40" width="280" height="40" rx="8" fill="#ffffff" stroke="#d5dbe8"/>
+      <rect x="56" y="56" width="100" height="8" rx="4" fill="#e4e8f2"/>
+      <rect x="40" y="100" width="130" height="130" rx="10" fill="#ffffff" stroke="#e1e6f0"/>
+      <rect x="190" y="100" width="130" height="130" rx="10" fill="#ffffff" stroke="#e1e6f0"/>
+      <rect width="360" height="260" fill="rgba(226,232,240,0.7)" mask="url(#mask-minimal)"/>
+    </g>
+    <g transform="translate(0 -20) translate(0 20)">
+      <rect class="" x="36" y="36" width="288" height="48" rx="6" fill="none" stroke="#111827" stroke-width="1" />
+    </g>
+    <g transform="translate(40 110)">
+      <rect width="280" height="112" rx="6" fill="#ffffff" stroke="#111827" stroke-opacity="0.12"/>
+      <clipPath id="barClip"><rect width="280" height="112" rx="6"/></clipPath>
+      <g clip-path="url(#barClip)"><rect width="280" height="3" fill="#111827" fill-opacity="0.1"/><rect width="187" height="3" fill="#111827"/></g>
+      
+        <text x="16" y="32" font-size="15" font-weight="600" fill="#1f2937">Filter results</text>
+        <text x="16" y="52" font-size="12" fill="#1f2937" opacity="0.85">Narrow the list by genre.</text>
+        <text x="16" y="97" font-size="11" fill="#1f2937" opacity="0.7">Step 2 of 3</text>
+        <g font-size="11">
+          <rect x="132" y="82" width="40" height="22" rx="6" fill="none" stroke="#111827"/><text x="152" y="97" text-anchor="middle" fill="#111827">Skip</text>
+          <rect x="178" y="82" width="40" height="22" rx="6" fill="none" stroke="#111827"/><text x="198" y="97" text-anchor="middle" fill="#111827">Back</text>
+          <rect x="224" y="82" width="40" height="22" rx="6" fill="#111827" stroke="#111827"/><text x="244" y="97" text-anchor="middle" fill="#ffffff">Next</text>
+        </g>
+    </g>
+  </g>
+  <text x="600" y="316" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f4ff">minimal</text>
+  <text x="600" y="338" text-anchor="middle" font-size="13" fill="#f1f4ff" opacity="0.65">Light card, thin outline, progress bar</text>
+  
+  <g transform="translate(810 20)">
+    <clipPath id="clip-bold"><rect width="360" height="260" rx="16"/></clipPath>
+    <mask id="mask-bold" maskUnits="userSpaceOnUse" x="0" y="0" width="360" height="260">
+      <rect width="360" height="260" fill="#fff"/><rect x="36" y="36" width="288" height="48" rx="16" fill="#000"/>
+    </mask>
+  </g>
+  <g transform="translate(810 20)">
+    <g clip-path="url(#clip-bold)">
+      <rect width="360" height="260" fill="#f4f6fb"/>
+      <rect width="360" height="26" fill="#ffffff"/>
+      <circle cx="16" cy="13" r="4" fill="#ff6b6b"/><circle cx="30" cy="13" r="4" fill="#ffc53d"/><circle cx="44" cy="13" r="4" fill="#3ddc84"/>
+      <rect x="40" y="40" width="280" height="40" rx="8" fill="#ffffff" stroke="#d5dbe8"/>
+      <rect x="56" y="56" width="100" height="8" rx="4" fill="#e4e8f2"/>
+      <rect x="40" y="100" width="130" height="130" rx="10" fill="#ffffff" stroke="#e1e6f0"/>
+      <rect x="190" y="100" width="130" height="130" rx="10" fill="#ffffff" stroke="#e1e6f0"/>
+      <rect width="360" height="260" fill="rgba(30,10,50,0.7)" mask="url(#mask-bold)"/>
+    </g>
+    <g transform="translate(0 -20) translate(0 20)">
+      <rect class="glow" x="36" y="36" width="288" height="48" rx="16" fill="none" stroke="#ffd60a" stroke-width="3" filter="url(#blur)"/>
+    </g>
+    <g transform="translate(40 110)">
+      <rect width="280" height="112" rx="16" fill="url(#boldGrad)"/>
+      
+        <text x="16" y="32" font-size="15" font-weight="600" fill="#ffffff">Filter results</text>
+        <text x="16" y="52" font-size="12" fill="#ffffff" opacity="0.85">Narrow the list by genre.</text>
+        <text x="16" y="97" font-size="11" fill="#ffffff" opacity="0.7">Step 2 of 3</text>
+        <g font-size="11">
+          <rect x="132" y="82" width="40" height="22" rx="11" fill="none" stroke="#ffffff"/><text x="152" y="97" text-anchor="middle" fill="#ffffff">Skip</text>
+          <rect x="178" y="82" width="40" height="22" rx="11" fill="none" stroke="#ffffff"/><text x="198" y="97" text-anchor="middle" fill="#ffffff">Back</text>
+          <rect x="224" y="82" width="40" height="22" rx="11" fill="#ffd60a" stroke="#ffd60a"/><text x="244" y="97" text-anchor="middle" fill="#2b0a3d">Next</text>
+        </g>
+      <circle cx="0" cy="0" r="14" fill="#ffd60a"/><text x="0" y="5" text-anchor="middle" font-size="14" font-weight="700" fill="#2b0a3d">2</text>
+    </g>
+  </g>
+  <text x="990" y="316" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f4ff">bold</text>
+  <text x="990" y="338" text-anchor="middle" font-size="13" fill="#f1f4ff" opacity="0.65">Gradient tooltip, numbered badge, glow</text>
+</svg>
