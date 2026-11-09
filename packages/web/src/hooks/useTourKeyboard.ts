@@ -28,12 +28,24 @@ export function useTourKeyboard(
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.defaultPrevented) return;
       if (event.key === "Escape") {
+        // Escape cancels an IME composition; it must not skip the tour.
+        if (event.isComposing) return;
         event.preventDefault();
         handlersRef.current.onClose();
         return;
       }
       // Arrow keys belong to the field while the user is typing.
       if (isEditable(event.target)) return;
+      // Modified arrows are browser/OS shortcuts; held keys must not skip through steps.
+      if (
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.repeat
+      ) {
+        return;
+      }
       if (event.key === "ArrowRight") {
         event.preventDefault();
         handlersRef.current.onNext();

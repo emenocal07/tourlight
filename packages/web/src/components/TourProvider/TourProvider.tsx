@@ -243,7 +243,9 @@ export function TourProvider<Id extends string>({
         ? createPortal(
             <>
               <LiveRegion
-                message={`Now on step ${state.index + 1} of ${state.steps.length}`}
+                message={`Now on step ${state.index + 1} of ${state.steps.length}${
+                  typeof current?.title === "string" ? `: ${current.title}` : ""
+                }`}
               />
               {currentElement && current ? (
                 <Overlay

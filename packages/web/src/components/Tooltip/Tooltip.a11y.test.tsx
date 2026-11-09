@@ -4,6 +4,7 @@ import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createTour } from "../../createTour";
+import { useTourKeyboard } from "../../hooks/useTourKeyboard";
 import { Tooltip } from "./Tooltip";
 
 const tour = createTour(
@@ -171,5 +172,94 @@ describe("Tooltip accessibility", () => {
     expect(block).toContain("transition: none");
     expect(block).toContain(".tourlight-mask");
     expect(block).toContain(".tourlight-tooltip");
+  });
+});
+
+function KeyboardHarness({
+  handlers,
+}: {
+  handlers: { onNext(): void; onPrev(): void; onClose(): void };
+}) {
+  useTourKeyboard(handlers, true);
+  return null;
+}
+
+function press(init: KeyboardEventInit & { key: string }): KeyboardEvent {
+  const event = new KeyboardEvent("keydown", {
+    bubbles: true,
+    cancelable: true,
+    ...init,
+  });
+  document.body.dispatchEvent(event);
+  return event;
+}
+
+describe("useTourKeyboard", () => {
+  function setup() {
+    const handlers = { onNext: vi.fn(), onPrev: vi.fn(), onClose: vi.fn() };
+    render(<KeyboardHarness handlers={handlers} />);
+    return handlers;
+  }
+
+  it("Alt+ArrowLeft does not call onPrev and is not default-prevented", () => {
+    const handlers = setup();
+    const event = press({ key: "ArrowLeft", altKey: true });
+    expect(handlers.onPrev).not.toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(false);
+  });
+
+  it("Meta+ArrowRight does not call onNext and is not default-prevented", () => {
+    const handlers = setup();
+    const event = press({ key: "ArrowRight", metaKey: true });
+    expect(handlers.onNext).not.toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(false);
+  });
+
+  it("held arrow keys (repeat) do not navigate", () => {
+    const handlers = setup();
+    press({ key: "ArrowRight", repeat: true });
+    expect(handlers.onNext).not.toHaveBeenCalled();
+  });
+
+  it("Escape while composing does not call onClose", () => {
+    const handlers = setup();
+    press({ key: "Escape", isComposing: true });
+    expect(handlers.onClose).not.toHaveBeenCalled();
+  });
+
+  it("plain arrows and Escape still work", () => {
+    const handlers = setup();
+    press({ key: "ArrowRight" });
+    press({ key: "ArrowLeft" });
+    press({ key: "Escape" });
+    expect(handlers.onNext).toHaveBeenCalledTimes(1);
+    expect(handlers.onPrev).toHaveBeenCalledTimes(1);
+    expect(handlers.onClose).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("live region title", () => {
+  it("includes a string title in the announcement", async () => {
+    const { user } = await renderActive();
+    await user.keyboard("{ArrowRight}");
+    const region = document.querySelector('[aria-live="polite"]');
+    expect(region?.textContent).toBe("Now on step 2 of 3: Title B");
+  });
+
+  it("announces position only when the title is not a string", async () => {
+    const elementTour = createTour(
+      { a: { order: 1, title: <em>Rich</em>, content: "Body" } },
+      { maxShows: 1, storageKey: "a11y-element-title" },
+    );
+    render(
+      <elementTour.TourProvider storage={createMemoryStorage()}>
+        <elementTour.TourStep id="a">
+          <div>target</div>
+        </elementTour.TourStep>
+      </elementTour.TourProvider>,
+    );
+    await flush();
+    const region = document.querySelector('[aria-live="polite"]');
+    expect(region?.textContent).toBe("Now on step 1 of 1");
   });
 });
