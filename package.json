@@ -9,9 +9,10 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "test": "npm run build:core && vitest run",
-    "typecheck": "npm run build:core && npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run build:libs && npm run typecheck --workspaces --if-present",
     "lint": "biome check .",
-    "build:core": "npm run build -w @emenocal07/tourlight-core"
+    "build:core": "npm run build -w @emenocal07/tourlight-core",
+    "build:libs": "npm run build -w @emenocal07/tourlight-core && npm run build -w @emenocal07/tourlight"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.6",
