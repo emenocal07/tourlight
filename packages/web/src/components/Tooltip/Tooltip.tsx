@@ -5,6 +5,7 @@ import {
   flip,
   offset,
   shift,
+  type VirtualElement,
 } from "@floating-ui/dom";
 import {
   type ReactElement,
@@ -13,7 +14,9 @@ import {
   useLayoutEffect,
   useRef,
 } from "react";
+import { clampToViewport, shouldDock } from "../../geometry/viewport";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import type { TourPlacement } from "../../placement";
 
 export interface TooltipProps {
   target: HTMLElement;
@@ -21,6 +24,7 @@ export interface TooltipProps {
   content: ReactNode;
   stepNumber: number;
   total: number;
+  placement?: TourPlacement;
   onNext(): void;
   onPrev(): void;
   onSkip(): void;
@@ -33,14 +37,63 @@ const OPPOSITE_SIDE: Record<string, string> = {
   left: "right",
 };
 
+const DOCK_MARGIN = 16;
+
+// The reference is the visible part of the target; contextElement keeps autoUpdate listening
+// to the target's scroll ancestors.
+function visibleReference(target: HTMLElement): VirtualElement {
+  return {
+    contextElement: target,
+    getBoundingClientRect: () => {
+      const { top, left, width, height } = clampToViewport(
+        target.getBoundingClientRect(),
+      );
+      return {
+        x: left,
+        y: top,
+        top,
+        left,
+        width,
+        height,
+        right: left + width,
+        bottom: top + height,
+      };
+    },
+  };
+}
+
 function updatePosition(
   target: HTMLElement,
   floating: HTMLElement,
   arrowEl: HTMLElement,
+  placement: TourPlacement,
 ): Promise<void> {
-  return computePosition(target, floating, {
+  const reference = visibleReference(target);
+  const visible = reference.getBoundingClientRect();
+  const size = floating.getBoundingClientRect();
+  const viewport = { width: window.innerWidth, height: window.innerHeight };
+  if (
+    shouldDock(
+      {
+        top: visible.top,
+        left: visible.left,
+        width: visible.width,
+        height: visible.height,
+      },
+      size,
+      viewport,
+      undefined,
+      placement,
+    )
+  ) {
+    floating.style.left = `${(viewport.width - size.width) / 2}px`;
+    floating.style.top = `${viewport.height - DOCK_MARGIN - size.height}px`;
+    floating.dataset.placement = "docked";
+    return Promise.resolve();
+  }
+  return computePosition(reference, floating, {
     strategy: "fixed",
-    placement: "bottom",
+    placement,
     middleware: [
       offset(12),
       flip(),
@@ -69,6 +122,7 @@ export function Tooltip({
   content,
   stepNumber,
   total,
+  placement = "bottom",
   onNext,
   onPrev,
   onSkip,
@@ -86,9 +140,9 @@ export function Tooltip({
     const arrowEl = arrowRef.current;
     if (!floating || !arrowEl) return;
     return autoUpdate(target, floating, () => {
-      void updatePosition(target, floating, arrowEl);
+      void updatePosition(target, floating, arrowEl, placement);
     });
-  }, [target]);
+  }, [target, placement]);
 
   return (
     <div

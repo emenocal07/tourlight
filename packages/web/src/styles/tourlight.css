@@ -54,6 +54,10 @@
     height 250ms ease;
 }
 
+.tourlight-mask[data-scrolling="true"] {
+  transition: none;
+}
+
 .tourlight-tooltip {
   position: fixed;
   top: 0;
@@ -282,6 +286,10 @@
   border-color: var(--tour-primary, var(--tour-default-primary));
   background: var(--tour-primary, var(--tour-default-primary));
   color: #2b0a3d;
+}
+
+.tourlight-tooltip[data-placement="docked"] .tourlight-tooltip__arrow {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -22,4 +22,19 @@ describe("Mask", () => {
     expect(mask.style.width).toBe("212px");
     expect(mask.style.height).toBe("92px");
   });
+
+  it("renders data-scrolling when scrolling is true", () => {
+    render(<Mask rect={new DOMRect(30, 50, 200, 80)} scrolling />);
+    expect(
+      screen.getByTestId("tourlight-mask").getAttribute("data-scrolling"),
+    ).toBe("true");
+  });
+
+  it("renders no data-scrolling attribute by default or when false", () => {
+    const { rerender } = render(<Mask rect={new DOMRect(30, 50, 200, 80)} />);
+    const mask = screen.getByTestId("tourlight-mask");
+    expect(mask.hasAttribute("data-scrolling")).toBe(false);
+    rerender(<Mask rect={new DOMRect(30, 50, 200, 80)} scrolling={false} />);
+    expect(mask.hasAttribute("data-scrolling")).toBe(false);
+  });
 });

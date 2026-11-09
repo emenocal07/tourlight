@@ -1,7 +1,8 @@
 import type { CSSProperties, ReactElement } from "react";
+import type { Rect } from "../../geometry/viewport";
 
 export interface BlockersProps {
-  rect: DOMRect;
+  rect: DOMRect | Rect;
   interactive: boolean;
 }
 
@@ -21,15 +22,17 @@ export function Blockers({ rect, interactive }: BlockersProps): ReactElement {
   if (!interactive) {
     return <Blocker style={{ top: 0, left: 0, right: 0, bottom: 0 }} />;
   }
+  const bottom = rect.top + rect.height;
+  const right = rect.left + rect.width;
   const top = Math.max(0, rect.top);
   const left = Math.max(0, rect.left);
-  const height = Math.max(0, rect.bottom - top);
+  const height = Math.max(0, bottom - top);
   return (
     <>
       <Blocker style={{ top: 0, left: 0, right: 0, height: top }} />
-      <Blocker style={{ top: rect.bottom, left: 0, right: 0, bottom: 0 }} />
+      <Blocker style={{ top: bottom, left: 0, right: 0, bottom: 0 }} />
       <Blocker style={{ top, left: 0, width: left, height }} />
-      <Blocker style={{ top, left: rect.right, right: 0, height }} />
+      <Blocker style={{ top, left: right, right: 0, height }} />
     </>
   );
 }

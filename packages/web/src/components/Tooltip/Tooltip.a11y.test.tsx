@@ -184,7 +184,8 @@ describe("Tooltip accessibility", () => {
     const animated = new Set<string>();
     for (const rule of css.slice(0, start).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
       const [, selectors = "", body = ""] = rule;
-      if (!/\b(animation|transition)\s*:/.test(body)) continue;
+      // A rule that only turns motion off (`transition: none`) needs no reduced-motion cover.
+      if (!/\b(animation|transition)\s*:\s*(?!none\b)\S/.test(body)) continue;
       for (const selector of selectors.split(",")) {
         const compound = selector.trim().split(/\s+/).pop() ?? "";
         if (compound.startsWith(".")) animated.add(compound);

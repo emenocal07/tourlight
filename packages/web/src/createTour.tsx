@@ -12,12 +12,14 @@ import {
   type TourApi,
   type TourProviderProps,
 } from "./context/tourContext";
+import type { TourPlacement } from "./placement";
 
 export interface StepConfig {
   order: number;
   title: ReactNode;
   content: ReactNode;
   interactive?: boolean;
+  placement?: TourPlacement;
 }
 
 export interface TourOptions {
@@ -50,6 +52,8 @@ export function createTour<const C extends Record<string, StepConfig>>(
     storage,
     variant,
     theme,
+    lockScroll,
+    placement,
   }: TourProviderProps) {
     return (
       <TourProviderImpl
@@ -61,6 +65,8 @@ export function createTour<const C extends Record<string, StepConfig>>(
         storage={storage}
         variant={variant}
         theme={theme}
+        lockScroll={lockScroll}
+        placement={placement}
       >
         {children}
       </TourProviderImpl>

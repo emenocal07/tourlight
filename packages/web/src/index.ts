@@ -9,4 +9,5 @@ export {
 export type { TourApi, TourProviderProps } from "./context/tourContext";
 export type { StepConfig, TourOptions } from "./createTour";
 export { createTour } from "./createTour";
+export type { TourPlacement } from "./placement";
 export type { TourTheme, TourVariant } from "./theme/variants";

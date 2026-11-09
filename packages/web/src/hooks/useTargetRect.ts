@@ -38,7 +38,12 @@ export function useTargetRect(el: HTMLElement | undefined): DOMRect | null {
       );
     };
 
-    el.scrollIntoView({ block: "center", inline: "nearest" });
+    // A target taller than the viewport cannot be centered without cutting both ends off.
+    const block =
+      el.getBoundingClientRect().height > window.innerHeight
+        ? "start"
+        : "center";
+    el.scrollIntoView({ block, inline: "nearest" });
     update();
 
     // The observer also fires when the element is removed, which is how an unmount is noticed.

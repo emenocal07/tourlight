@@ -27,8 +27,12 @@ import type {
   TourContextValue,
   TourProviderProps,
 } from "../../context/tourContext";
+import { clampToViewport } from "../../geometry/viewport";
+import { useIsScrolling } from "../../hooks/useIsScrolling";
+import { useScrollLock } from "../../hooks/useScrollLock";
 import { measure, useTargetRect } from "../../hooks/useTargetRect";
 import { useTourKeyboard } from "../../hooks/useTourKeyboard";
+import type { TourPlacement } from "../../placement";
 import { createStepRegistry } from "../../registry/stepRegistry";
 import { themeToCssVariables } from "../../theme/applyTheme";
 import { Blockers } from "../Blockers/Blockers";
@@ -39,6 +43,7 @@ export interface StepContent {
   title: ReactNode;
   content: ReactNode;
   interactive?: boolean;
+  placement?: TourPlacement;
 }
 
 export interface TourProviderImplProps<Id extends string>
@@ -87,6 +92,7 @@ interface OverlayProps {
   stepNumber: number;
   total: number;
   interactive: boolean;
+  placement: TourPlacement;
   onNext(): void;
   onPrev(): void;
   onSkip(): void;
@@ -99,15 +105,18 @@ function Overlay({
   ...tooltip
 }: OverlayProps): ReactElement | null {
   const rect = useTargetRect(tooltip.target);
+  const scrolling = useIsScrolling();
   // A null rect means the target is detached, hidden or zero-sized.
   useEffect(() => {
     if (rect === null) onUnavailable();
   }, [rect, onUnavailable]);
   if (rect === null) return null;
+  // The raw rect decides availability; everything drawn uses only the part that is on screen.
+  const visible = clampToViewport(rect);
   return (
     <>
-      <Blockers rect={rect} interactive={interactive} />
-      <Mask rect={rect} />
+      <Blockers rect={visible} interactive={interactive} />
+      <Mask rect={visible} scrolling={scrolling} />
       <Tooltip {...tooltip} />
     </>
   );
@@ -122,6 +131,8 @@ export function TourProvider<Id extends string>({
   storage,
   variant = "minimal",
   theme,
+  lockScroll = true,
+  placement: defaultPlacement = "bottom",
   children,
 }: TourProviderImplProps<Id>): ReactElement {
   const [state, dispatch] = useReducer(
@@ -243,6 +254,8 @@ export function TourProvider<Id extends string>({
     [registry, api],
   );
 
+  useScrollLock(lockScroll && isActive);
+
   useTourKeyboard(
     { onNext: api.next, onPrev: api.prev, onClose: api.skip },
     isActive,
@@ -274,6 +287,7 @@ export function TourProvider<Id extends string>({
                   stepNumber={state.index + 1}
                   total={state.steps.length}
                   interactive={current.interactive === true}
+                  placement={current.placement ?? defaultPlacement}
                   onNext={api.next}
                   onPrev={api.prev}
                   onSkip={api.skip}

@@ -1,5 +1,6 @@
 import type { TourStorage } from "@emenocal07/tourlight-core";
 import { type Context, createContext, type ReactNode } from "react";
+import type { TourPlacement } from "../placement";
 import type { StepRegistry } from "../registry/stepRegistry";
 import type { TourTheme, TourVariant } from "../theme/variants";
 
@@ -17,6 +18,8 @@ export interface TourProviderProps {
   storage?: TourStorage;
   variant?: TourVariant;
   theme?: Partial<TourTheme>;
+  lockScroll?: boolean;
+  placement?: TourPlacement;
 }
 
 export interface TourContextValue {
