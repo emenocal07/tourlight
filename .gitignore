@@ -4,3 +4,5 @@ dist
 .superpowers
 .packs
 docs
+packages/web/README.md
+packages/*/LICENSE

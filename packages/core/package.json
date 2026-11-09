@@ -1,6 +1,25 @@
 {
   "name": "@emenocal07/tourlight-core",
   "version": "0.1.0",
+  "description": "Framework-agnostic state machine and persistence logic behind Tourlight.",
+  "license": "MIT",
+  "author": "Ernesto Espinoza Menocal (https://github.com/emenocal07)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emenocal07/tourlight.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/emenocal07/tourlight#readme",
+  "bugs": {
+    "url": "https://github.com/emenocal07/tourlight/issues"
+  },
+  "keywords": [
+    "tour",
+    "onboarding",
+    "state-machine",
+    "typescript",
+    "tourlight"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
@@ -21,7 +40,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "node ../../scripts/copyPackageDocs.mjs"
   },
   "publishConfig": {
     "access": "public"
