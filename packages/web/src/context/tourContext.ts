@@ -1,5 +1,5 @@
 import type { TourStorage } from "@emenocal07/tourlight-core";
-import { createContext, type ReactNode } from "react";
+import { type Context, createContext, type ReactNode } from "react";
 import type { StepRegistry } from "../registry/stepRegistry";
 
 export interface TourApi {
@@ -21,4 +21,9 @@ export interface TourContextValue {
   api: TourApi;
 }
 
-export const TourContext = createContext<TourContextValue | null>(null);
+export type TourContextType = Context<TourContextValue | null>;
+
+// One context per createTour call, so components of different tours never bind to each other.
+export function createTourContext(): TourContextType {
+  return createContext<TourContextValue | null>(null);
+}

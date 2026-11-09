@@ -1,7 +1,8 @@
 import { render } from "@testing-library/react";
 import { createRef, type ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { TourContext } from "./context/tourContext";
+import { TourStep } from "./components/TourStep/TourStep";
+import { createTourContext } from "./context/tourContext";
 import { createTour } from "./createTour";
 import { createStepRegistry } from "./registry/stepRegistry";
 
@@ -40,11 +41,9 @@ describe("createTour", () => {
 });
 
 describe("TourStep ref merging", () => {
-  const config = { a: { order: 1, title: "A", content: "Step A" } };
-
   function setup() {
     const registry = createStepRegistry();
-    const { TourStep } = createTour(config);
+    const TourContext = createTourContext();
     const wrap = (child: ReactElement) => (
       <TourContext.Provider
         value={{
@@ -59,7 +58,9 @@ describe("TourStep ref merging", () => {
           },
         }}
       >
-        <TourStep id="a">{child}</TourStep>
+        <TourStep context={TourContext} id="a">
+          {child}
+        </TourStep>
       </TourContext.Provider>
     );
     return { registry, wrap };

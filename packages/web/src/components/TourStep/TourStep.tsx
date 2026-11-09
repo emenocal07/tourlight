@@ -7,11 +7,15 @@ import {
   useRef,
   version,
 } from "react";
-import { TourContext } from "../../context/tourContext";
+import type { TourContextType } from "../../context/tourContext";
 
 export interface TourStepProps {
   id: string;
   children: ReactElement;
+}
+
+export interface TourStepImplProps extends TourStepProps {
+  context: TourContextType;
 }
 
 function assignRef<T>(ref: Ref<T> | undefined, value: T | null): void {
@@ -32,8 +36,12 @@ function readChildRef(child: ReactElement): Ref<HTMLElement> | undefined {
   return (child as unknown as { ref?: Ref<HTMLElement> }).ref;
 }
 
-export function TourStep({ id, children }: TourStepProps): ReactElement {
-  const ctx = useContext(TourContext);
+export function TourStep({
+  context,
+  id,
+  children,
+}: TourStepImplProps): ReactElement {
+  const ctx = useContext(context);
   if (!ctx) {
     throw new Error("TourStep must be rendered inside its TourProvider");
   }

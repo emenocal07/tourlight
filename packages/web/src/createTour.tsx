@@ -1,15 +1,15 @@
-import { validateConfig } from "@emenocal07/tourlight-core";
+import { orderSteps, validateConfig } from "@emenocal07/tourlight-core";
 import {
   type ComponentType,
   type ReactElement,
   type ReactNode,
   useContext,
 } from "react";
-import { TourProvider } from "./components/TourProvider/TourProvider";
+import { TourProvider as TourProviderImpl } from "./components/TourProvider/TourProvider";
 import { TourStep as TourStepImpl } from "./components/TourStep/TourStep";
 import {
+  createTourContext,
   type TourApi,
-  TourContext,
   type TourProviderProps,
 } from "./context/tourContext";
 
@@ -31,23 +31,51 @@ export interface TourInstance<Id extends string> {
   useTour: () => TourApi;
 }
 
-function useTour(): TourApi {
-  const ctx = useContext(TourContext);
-  if (!ctx) {
-    throw new Error("useTour must be used inside its TourProvider");
-  }
-  return ctx.api;
-}
-
 export function createTour<const C extends Record<string, StepConfig>>(
   config: C,
-  _options?: TourOptions,
+  options?: TourOptions,
 ): TourInstance<keyof C & string> {
+  type Id = keyof C & string;
   validateConfig(config);
 
-  return {
-    TourProvider,
-    TourStep: TourStepImpl,
-    useTour,
-  };
+  const context = createTourContext();
+  const steps = orderSteps<Id>(config);
+  const maxShows = options?.maxShows ?? 1;
+  // Derived from the step ids so two different tours do not share progress by default.
+  const storageKey = options?.storageKey ?? `tourlight:${steps.join(",")}`;
+
+  // biome-ignore lint/correctness/noComponentHookFactories: createTour runs once at module scope; a distinct identity per call is the intended per-tour binding.
+  function TourProvider({ children, storage }: TourProviderProps) {
+    return (
+      <TourProviderImpl
+        context={context}
+        steps={steps}
+        maxShows={maxShows}
+        storageKey={storageKey}
+        storage={storage}
+      >
+        {children}
+      </TourProviderImpl>
+    );
+  }
+
+  // biome-ignore lint/correctness/noComponentHookFactories: createTour runs once at module scope; a distinct identity per call is the intended per-tour binding.
+  function TourStep({ id, children }: { id: Id; children: ReactElement }) {
+    return (
+      <TourStepImpl context={context} id={id}>
+        {children}
+      </TourStepImpl>
+    );
+  }
+
+  // biome-ignore lint/correctness/noComponentHookFactories: createTour runs once at module scope; a distinct identity per call is the intended per-tour binding.
+  function useTour(): TourApi {
+    const ctx = useContext(context);
+    if (!ctx) {
+      throw new Error("useTour must be used inside its TourProvider");
+    }
+    return ctx.api;
+  }
+
+  return { TourProvider, TourStep, useTour };
 }
