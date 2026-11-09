@@ -1,6 +1,6 @@
 {
   "name": "@emenocal07/tourlight",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Guided product tours for React with a spotlight mask, typed step ids and accessibility built in.",
   "license": "MIT",
   "author": "Ernesto Espinoza Menocal (https://github.com/emenocal07)",
@@ -52,7 +52,7 @@
     "prepack": "node ../../scripts/copyPackageDocs.mjs --readme"
   },
   "dependencies": {
-    "@emenocal07/tourlight-core": "0.1.0",
+    "@emenocal07/tourlight-core": "0.1.1",
     "@floating-ui/dom": "^1.8.0"
   },
   "peerDependencies": {
