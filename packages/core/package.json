@@ -1,7 +1,7 @@
 {
   "name": "@emenocal07/tourlight-core",
   "version": "0.1.0",
-  "description": "Framework-agnostic state machine and persistence logic behind Tourlight.",
+  "description": "Internal building block of Tourlight: the framework-agnostic state machine and persistence logic. Most apps want @emenocal07/tourlight.",
   "license": "MIT",
   "author": "Ernesto Espinoza Menocal (https://github.com/emenocal07)",
   "repository": {
