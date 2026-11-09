@@ -27,7 +27,7 @@ import type {
   TourContextValue,
   TourProviderProps,
 } from "../../context/tourContext";
-import { useTargetRect } from "../../hooks/useTargetRect";
+import { measure, useTargetRect } from "../../hooks/useTargetRect";
 import { useTourKeyboard } from "../../hooks/useTourKeyboard";
 import { createStepRegistry } from "../../registry/stepRegistry";
 import { themeToCssVariables } from "../../theme/applyTheme";
@@ -143,9 +143,13 @@ export function TourProvider<Id extends string>({
   const start = useCallback(() => {
     if (statusRef.current === "active") return;
     const available = steps.filter((id) => {
-      const mounted = registry.get(id) !== undefined;
-      if (!mounted) warnMissingStep(id);
-      return mounted;
+      const element = registry.get(id);
+      if (element === undefined) {
+        warnMissingStep(id);
+        return false;
+      }
+      // A mounted but hidden or zero-sized target (e.g. a responsive layout) is not a visible step.
+      return measure(element) !== null;
     });
     if (available.length === 0) return;
     statusRef.current = "active";
@@ -208,6 +212,7 @@ export function TourProvider<Id extends string>({
     state.status === "active" ? state.steps[state.index] : undefined;
   const currentElement =
     currentId === undefined ? undefined : registry.get(currentId);
+  // A tour that runs out of available steps mid-tour ends as completed, by design.
   // Runs after every render: the registry is not reactive, so an unmounted step is only seen here.
   useEffect(() => {
     if (currentId !== undefined && registry.get(currentId) === undefined) {

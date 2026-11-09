@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 // A target that is detached, display: none or zero-sized cannot be highlighted.
-function measure(el: HTMLElement): DOMRect | null {
+export function measure(el: HTMLElement): DOMRect | null {
   if (!el.isConnected) return null;
   if (getComputedStyle(el).display === "none") return null;
   const rect = el.getBoundingClientRect();

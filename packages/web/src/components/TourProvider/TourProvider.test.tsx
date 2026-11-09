@@ -462,6 +462,80 @@ describe("TourProvider overlay", () => {
     expect(screen.getByText("Second")).toBeTruthy();
   });
 
+  function spyStorage(): {
+    storage: TourStorage;
+    setItem: ReturnType<typeof vi.fn>;
+  } {
+    const memory = createMemoryStorage();
+    const setItem = vi.fn((key: string, value: string) =>
+      memory.setItem(key, value),
+    );
+    return {
+      storage: { getItem: (key) => memory.getItem(key), setItem },
+      setItem,
+    };
+  }
+
+  it("does not start when every mounted target is display none", async () => {
+    const { storage, setItem } = spyStorage();
+    render(
+      <tourDisplay.TourProvider storage={storage}>
+        <tourDisplay.TourStep id="a">
+          <div style={{ display: "none" }}>hidden a</div>
+        </tourDisplay.TourStep>
+        <tourDisplay.TourStep id="b">
+          <div style={{ display: "none" }}>hidden b</div>
+        </tourDisplay.TourStep>
+      </tourDisplay.TourProvider>,
+    );
+    await flush();
+    expect(screen.queryByText("Step 1 of 1")).toBeNull();
+    expect(screen.queryByText("First")).toBeNull();
+    expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it("does not start when every mounted target is zero-sized", async () => {
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(
+      () => new DOMRect(0, 0, 0, 0),
+    );
+    const { storage, setItem } = spyStorage();
+    render(
+      <tourDisplay.TourProvider storage={storage}>
+        <tourDisplay.TourStep id="a">
+          <div>zero a</div>
+        </tourDisplay.TourStep>
+        <tourDisplay.TourStep id="b">
+          <div>zero b</div>
+        </tourDisplay.TourStep>
+      </tourDisplay.TourProvider>,
+    );
+    await flush();
+    expect(screen.queryByText("First")).toBeNull();
+    expect(screen.queryByText("Second")).toBeNull();
+    expect(setItem).not.toHaveBeenCalled();
+  });
+
+  it("starts on the visible step when the first is hidden and counts one show", async () => {
+    const { storage, setItem } = spyStorage();
+    render(
+      <tourDisplay.TourProvider storage={storage}>
+        <tourDisplay.TourStep id="a">
+          <div style={{ display: "none" }}>hidden</div>
+        </tourDisplay.TourStep>
+        <tourDisplay.TourStep id="b">
+          <div>visible</div>
+        </tourDisplay.TourStep>
+      </tourDisplay.TourProvider>,
+    );
+    await flush();
+    expect(screen.getByText("Step 1 of 1")).toBeTruthy();
+    expect(setItem).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(setItem.mock.calls[0]?.[1] as string)).toEqual({
+      shown: 1,
+      completed: false,
+    });
+  });
+
   it("an active step that unmounts is skipped when its size change is observed", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const tour = makeTour();
