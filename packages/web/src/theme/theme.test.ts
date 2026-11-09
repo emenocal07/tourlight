@@ -44,16 +44,16 @@ describe("variant palettes", () => {
     "%s CSS block matches variantDefaults (single source)",
     (variant) => {
       const match = new RegExp(
-        `\\[data-variant="${variant}"\\]\\s*\\{([^}]*)\\}`,
+        `:where\\(\\[data-variant="${variant}"\\]\\)\\s*\\{([^}]*)\\}`,
       ).exec(css);
       expect(match).not.toBeNull();
       const body = match?.[1] ?? "";
       const names: Record<keyof TourTheme, string> = {
-        primary: "--tour-primary",
-        surface: "--tour-surface",
-        text: "--tour-text",
-        radius: "--tour-radius",
-        dim: "--tour-dim",
+        primary: "--tour-default-primary",
+        surface: "--tour-default-surface",
+        text: "--tour-default-text",
+        radius: "--tour-default-radius",
+        dim: "--tour-default-dim",
       };
       for (const key of Object.keys(names) as (keyof TourTheme)[]) {
         const declaration = new RegExp(`${names[key]}:\\s*([^;]+);`).exec(body);
@@ -63,6 +63,31 @@ describe("variant palettes", () => {
       }
     },
   );
+});
+
+describe("public variable overrides", () => {
+  const tokens = ["primary", "surface", "text", "radius", "dim"];
+
+  it("never declares the public --tour-* variables", () => {
+    const declared = css.match(
+      /--tour-(?:primary|surface|text|radius|dim)\s*:/g,
+    );
+    expect(declared).toBeNull();
+  });
+
+  it("every consumer reads var(--tour-X, var(--tour-default-X))", () => {
+    for (const token of tokens) {
+      const uses = css.match(
+        new RegExp(`var\\(--tour-${token}\\b[^)]*\\)*`, "g"),
+      );
+      expect(uses?.length, token).toBeGreaterThan(0);
+      for (const use of uses ?? []) {
+        expect(use, token).toContain(
+          `var(--tour-${token}, var(--tour-default-${token})`,
+        );
+      }
+    }
+  });
 });
 
 describe("themeToCssVariables", () => {

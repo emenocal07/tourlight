@@ -1,25 +1,32 @@
-[data-variant="glass"] {
-  --tour-primary: #5b7cff;
-  --tour-surface: #151a2e;
-  --tour-text: #f1f4ff;
-  --tour-radius: 14px;
-  --tour-dim: rgba(6, 9, 22, 0.72);
+/*
+ * Public override variables: --tour-primary, --tour-surface, --tour-text, --tour-radius, --tour-dim.
+ * Set them on :root, body, .tourlight-root or any ancestor; no selector specificity or source
+ * order is needed because this stylesheet never declares them. Variant defaults live in the
+ * internal --tour-default-* variables, which the public ones fall back to.
+ */
+
+:where([data-variant="glass"]) {
+  --tour-default-primary: #5b7cff;
+  --tour-default-surface: #151a2e;
+  --tour-default-text: #f1f4ff;
+  --tour-default-radius: 14px;
+  --tour-default-dim: rgba(6, 9, 22, 0.72);
 }
 
-[data-variant="minimal"] {
-  --tour-primary: #111827;
-  --tour-surface: #ffffff;
-  --tour-text: #1f2937;
-  --tour-radius: 6px;
-  --tour-dim: rgba(226, 232, 240, 0.7);
+:where([data-variant="minimal"]) {
+  --tour-default-primary: #111827;
+  --tour-default-surface: #ffffff;
+  --tour-default-text: #1f2937;
+  --tour-default-radius: 6px;
+  --tour-default-dim: rgba(226, 232, 240, 0.7);
 }
 
-[data-variant="bold"] {
-  --tour-primary: #ffd60a;
-  --tour-surface: #c81e4a;
-  --tour-text: #ffffff;
-  --tour-radius: 16px;
-  --tour-dim: rgba(30, 10, 50, 0.7);
+:where([data-variant="bold"]) {
+  --tour-default-primary: #ffd60a;
+  --tour-default-surface: #c81e4a;
+  --tour-default-text: #ffffff;
+  --tour-default-radius: 16px;
+  --tour-default-dim: rgba(30, 10, 50, 0.7);
 }
 
 .tourlight-root {
@@ -37,8 +44,8 @@
   position: fixed;
   z-index: 2147483646;
   box-sizing: border-box;
-  border-radius: var(--tour-radius, 8px);
-  box-shadow: 0 0 0 9999px var(--tour-dim, rgba(0, 0, 0, 0.6));
+  border-radius: var(--tour-radius, var(--tour-default-radius));
+  box-shadow: 0 0 0 9999px var(--tour-dim, var(--tour-default-dim));
   pointer-events: none;
   transition:
     top 250ms ease,
@@ -56,9 +63,9 @@
   width: max-content;
   max-width: min(320px, calc(100vw - 16px));
   padding: 16px;
-  border-radius: var(--tour-radius, 8px);
-  background: var(--tour-surface, #ffffff);
-  color: var(--tour-text, #1f2937);
+  border-radius: var(--tour-radius, var(--tour-default-radius));
+  background: var(--tour-surface, var(--tour-default-surface));
+  color: var(--tour-text, var(--tour-default-text));
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   font:
     14px / 1.5 system-ui,
@@ -91,17 +98,17 @@
 
 .tourlight-tooltip__actions button {
   padding: 4px 12px;
-  border: 1px solid var(--tour-primary, #4f46e5);
-  border-radius: var(--tour-radius, 8px);
+  border: 1px solid var(--tour-primary, var(--tour-default-primary));
+  border-radius: var(--tour-radius, var(--tour-default-radius));
   background: transparent;
-  color: var(--tour-primary, #4f46e5);
+  color: var(--tour-primary, var(--tour-default-primary));
   font: inherit;
   cursor: pointer;
 }
 
 .tourlight-tooltip__actions button:last-child {
-  background: var(--tour-primary, #4f46e5);
-  color: var(--tour-surface, #ffffff);
+  background: var(--tour-primary, var(--tour-default-primary));
+  color: var(--tour-surface, var(--tour-default-surface));
 }
 
 .tourlight-tooltip__actions button:disabled {
@@ -113,7 +120,7 @@
   position: absolute;
   width: 8px;
   height: 8px;
-  background: var(--tour-surface, #ffffff);
+  background: var(--tour-surface, var(--tour-default-surface));
   transform: rotate(45deg);
 }
 
@@ -143,20 +150,20 @@
 }
 
 [data-variant="minimal"] .tourlight-mask {
-  outline: 1px solid var(--tour-primary);
+  outline: 1px solid var(--tour-primary, var(--tour-default-primary));
 }
 
 [data-variant="glass"] .tourlight-mask::after {
   opacity: 1;
-  border: 2px solid var(--tour-primary);
+  border: 2px solid var(--tour-primary, var(--tour-default-primary));
   animation: tourlight-pulse 2s ease-in-out infinite;
 }
 
 [data-variant="bold"] .tourlight-mask::after {
   opacity: 1;
   box-shadow:
-    0 0 18px 4px var(--tour-primary),
-    0 0 40px 10px var(--tour-primary);
+    0 0 18px 4px var(--tour-primary, var(--tour-default-primary)),
+    0 0 40px 10px var(--tour-primary, var(--tour-default-primary));
   animation: tourlight-glow 1.6s ease-in-out infinite alternate;
 }
 
@@ -212,14 +219,15 @@
   right: 0;
   height: 3px;
   overflow: hidden;
-  border-radius: var(--tour-radius, 6px) var(--tour-radius, 6px) 0 0;
+  border-radius: var(--tour-radius, var(--tour-default-radius))
+    var(--tour-radius, var(--tour-default-radius)) 0 0;
   background: rgba(17, 24, 39, 0.1);
 }
 
 .tourlight-tooltip__bar-fill {
   display: block;
   height: 100%;
-  background: var(--tour-primary, #111827);
+  background: var(--tour-primary, var(--tour-default-primary));
   transition: width 250ms ease;
 }
 
@@ -229,17 +237,25 @@
 
 @supports (backdrop-filter: blur(1px)) {
   [data-variant="glass"] .tourlight-tooltip {
-    background: color-mix(in srgb, var(--tour-surface) 72%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--tour-surface, var(--tour-default-surface)) 72%,
+      transparent
+    );
     backdrop-filter: blur(14px) saturate(140%);
   }
 }
 
 [data-variant="bold"] .tourlight-tooltip {
-  background: linear-gradient(135deg, var(--tour-surface), #6d28d9);
+  background: linear-gradient(
+    135deg,
+    var(--tour-surface, var(--tour-default-surface)),
+    #6d28d9
+  );
 }
 
 [data-variant="bold"] .tourlight-tooltip__arrow {
-  background: var(--tour-surface);
+  background: var(--tour-surface, var(--tour-default-surface));
 }
 
 [data-variant="bold"] .tourlight-tooltip__badge {
@@ -252,19 +268,19 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--tour-primary);
+  background: var(--tour-primary, var(--tour-default-primary));
   color: #2b0a3d;
   font-weight: 700;
 }
 
 [data-variant="bold"] .tourlight-tooltip__actions button {
-  border-color: var(--tour-text);
-  color: var(--tour-text);
+  border-color: var(--tour-text, var(--tour-default-text));
+  color: var(--tour-text, var(--tour-default-text));
 }
 
 [data-variant="bold"] .tourlight-tooltip__actions button:last-child {
-  border-color: var(--tour-primary);
-  background: var(--tour-primary);
+  border-color: var(--tour-primary, var(--tour-default-primary));
+  background: var(--tour-primary, var(--tour-default-primary));
   color: #2b0a3d;
 }
 
