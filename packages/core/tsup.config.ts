@@ -6,5 +6,4 @@ export default defineConfig({
   dts: true,
   clean: true,
   sourcemap: true,
-  external: ["react", "react-dom", "@emenocal07/tourlight-core"],
 });
