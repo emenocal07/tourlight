@@ -1,6 +1,13 @@
 {
   "files": {
-    "includes": ["**", "!**/dist", "!**/node_modules", "!.superpowers", "!docs"]
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/node_modules",
+      "!.superpowers",
+      "!.packs",
+      "!docs"
+    ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2 },
   "linter": { "enabled": true }
